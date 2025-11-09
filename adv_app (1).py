@@ -1,23 +1,23 @@
 import streamlit as st
 import pickle
 import numpy as np
-import joblib 
-filename = 'decision_tree_model.pkl'
-loaded_model = joblib.load(open(filename, 'rb'))
 
-# Load the saved model
-model = pickle.load(open('linear_reg.sav', 'rb'))
+# Load the saved model once
+@st.cache_resource
+def load_model():
+    with open("linear_reg.sav", "rb") as f:
+        return pickle.load(f)
 
-st.title('Sales Prediction App')
+model = load_model()
 
-# Input features
-TV = st.number_input('TV Advertising Budget', min_value=0.0)
-Radio = st.number_input('Radio Advertising Budget', min_value=0.0)
-Newspaper = st.number_input('Newspaper Advertising Budget', min_value=0.0)
+st.title("Sales Prediction App")
 
-# Make prediction
-if st.button('Predict Sales'):
-    input_data = np.array([[TV, Radio, Newspaper]])
-    prediction = model.predict(input_data)[0]
-    st.success(f'Predicted Sales: {prediction:.2f}')
+TV = st.number_input("TV Advertising Budget", min_value=0.0)
+Radio = st.number_input("Radio Advertising Budget", min_value=0.0)
+Newspaper = st.number_input("Newspaper Advertising Budget", min_value=0.0)
+
+if st.button("Predict Sales"):
+    input_data = np.array([[TV, Radio, Newspaper]], dtype=float)
+    prediction = float(model.predict(input_data)[0])
+    st.success(f"Predicted Sales: {prediction:.2f}")
 
